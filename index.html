@@ -2,45 +2,44 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>eyeGPT - Live AI Fact Generator</title>
+    <title>eyeGPT - Groq Fast Edition</title>
     <style>
-        body { background: #050505; color: #00ffaa; font-family: 'Courier New', monospace; padding: 20px; }
-        .console { max-width: 800px; margin: auto; border: 1px solid #00ffaa; padding: 20px; background: #000; box-shadow: 0 0 20px #00ffaa33; }
-        h2 { text-align: center; border-bottom: 2px solid #00ffaa; padding-bottom: 10px; letter-spacing: 2px; }
+        body { background: #050505; color: #f0f0f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
+        .console { max-width: 800px; margin: auto; border: 1px solid #f55036; padding: 25px; background: #0a0a0a; border-radius: 10px; box-shadow: 0 0 20px rgba(245, 80, 54, 0.2); }
+        h2 { color: #f55036; text-align: center; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
         .input-group { margin-bottom: 20px; }
-        select, button { background: #000; color: #00ffaa; border: 1px solid #00ffaa; padding: 12px; width: 100%; cursor: pointer; font-family: 'Courier New'; }
-        button { font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        button:hover { background: #00ffaa; color: #000; box-shadow: 0 0 15px #00ffaa; }
-        .loading { display: none; color: #fff; text-align: center; margin: 20px 0; animation: blink 1s infinite; }
-        .result { margin-top: 30px; display: none; animation: fadeIn 0.5s; }
-        .fact-box { background: #111; padding: 20px; border-left: 5px solid #00ffaa; margin-bottom: 20px; color: #fff; line-height: 1.6; }
-        .scene { color: #88ff88; margin-top: 10px; background: #0a0a0a; padding: 15px; border: 1px solid #333; font-size: 0.9em; }
-        .label-red { color: #ff3e3e; font-weight: bold; }
-        @keyframes blink { 50% { opacity: 0; } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        label { color: #888; font-size: 0.8em; display: block; margin-bottom: 5px; }
+        select, button { background: #111; color: #fff; border: 1px solid #333; padding: 12px; width: 100%; cursor: pointer; border-radius: 5px; outline: none; }
+        button { background: #f55036; color: #fff; border: none; font-weight: bold; margin-top: 10px; transition: 0.3s; }
+        button:hover { background: #ff6b57; box-shadow: 0 0 15px #f55036; }
+        .loading { display: none; color: #f55036; text-align: center; margin: 20px 0; font-weight: bold; }
+        .result { margin-top: 30px; display: none; border-top: 1px solid #333; padding-top: 20px; }
+        .fact-box { background: #1a1a1a; padding: 20px; border-left: 5px solid #f55036; margin-bottom: 20px; color: #e0e0e0; }
+        .scene { color: #88ff88; margin-top: 12px; background: #000; padding: 15px; border: 1px solid #222; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 0.9em; }
+        .scene-label { color: #f55036; font-weight: bold; display: block; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
 <div class="console">
-    <h2>[ ZOLDYCK AI INTERFACE ]</h2>
+    <h2>[ GROQ AI GENERATOR ]</h2>
     
     <div class="input-group">
-        <label>PILIH KATEGORI TARGET:</label>
+        <label>TARGET KATEGORI:</label>
         <select id="subject">
-            <option value="hewan langka, predator, atau serangga unik">HEWAN</option>
-            <option value="anomali geologi bumi, tempat misterius, atau inti bumi">BUMI</option>
-            <option value="tumbuhan karnivora, beracun, atau purba">TUMBUHAN</option>
+            <option value="hewan purba yang mengerikan">HEWAN</option>
+            <option value="fenomena alam bumi yang aneh">BUMI</option>
+            <option value="tumbuhan karnivora atau beracun">TUMBUHAN</option>
         </select>
     </div>
 
-    <button onclick="generateWithAI()">EKSEKUSI PENCARIAN AI</button>
+    <button onclick="generateWithGroq()">EKSEKUSI (GROQ SPEED)</button>
 
-    <div id="loader" class="loading">SINKRONISASI DATA KE SERVER GEMINI...</div>
+    <div id="loader" class="loading">SINKRONISASI Llama-3 VIA GROQ...</div>
 
     <div id="resultArea" class="result">
         <div class="fact-box">
-            <strong style="color: #00ffaa;">[ DATA FAKTA ]</strong>
+            <strong style="color: #f55036;">[ TAHUKAH KAMU? ]</strong>
             <p id="resFact"></p>
         </div>
         <div id="resPrompts"></div>
@@ -48,51 +47,50 @@
 </div>
 
 <script>
-async function generateWithAI() {
-    // API Key Anda sudah tertanam di sini
-    const API_KEY = "AIzaSyAZFsDHTB9TKi8X_ze3jpGeeXFsyOPugnM";
+async function generateWithGroq() {
+    // API KEY GROQ MILIK ANDA
+    const API_KEY = "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";
     const subject = document.getElementById('subject').value;
     const loader = document.getElementById('loader');
     const resultArea = document.getElementById('resultArea');
 
     loader.style.display = 'block';
     resultArea.style.display = 'none';
-    
-    const prompt = `Berikan satu fakta unik yang sangat jarang diketahui tentang ${subject}. 
-    Berikan penjelasan dengan gaya "Tahukah kamu...". 
-    Kemudian buatkan 3 prompt video sinematik (klip 1, klip 2, klip 3) yang sangat detail untuk Grok/X AI guna menggambarkan fakta tersebut.
-    Balas HANYA dengan format JSON seperti ini: 
-    {
-      "fakta": "Isi fakta di sini",
-      "prompts": ["prompt klip 1", "prompt klip 2", "prompt klip 3"]
-    }`;
+
+    const systemPrompt = `Berikan 1 fakta unik tentang ${subject}. Jelaskan dengan gaya 'Tahukah kamu...'. Setelah itu buatkan 3 prompt video sinematik detail (Klip 1, 2, 3) untuk Grok AI. Jawab HANYA dalam format JSON: {"fakta": "...", "prompts": ["...", "...", "..."]}`;
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${API_KEY}`
+            },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
+                model: "llama3-8b-8192", // Menggunakan model Llama 3 tercepat
+                messages: [
+                    { role: "user", content: systemPrompt }
+                ],
+                response_format: { type: "json_object" }
             })
         });
 
         const data = await response.json();
-        const rawResponse = data.candidates[0].content.parts[0].text;
-        const cleanJson = JSON.parse(rawResponse.replace(/```json|```/g, ''));
+        const content = JSON.parse(data.choices[0].message.content);
 
-        document.getElementById('resFact').innerText = cleanJson.fakta;
+        document.getElementById('resFact').innerText = content.fakta;
         
-        let htmlContent = "<strong style='color:#ff3e3e'>[ PROMPT GENERATOR ]</strong>";
-        cleanJson.prompts.forEach((p, i) => {
-            htmlContent += `<div class="scene"><span class="label-red">KLIP ${i+1}:</span><br>${p}</div>`;
+        let promptHtml = "<strong style='color:#888'>[ VIDEO PROMPTS ]</strong>";
+        content.prompts.forEach((p, i) => {
+            promptHtml += `<div class="scene"><span class="scene-label">KLIP ${i+1}</span>${p}</div>`;
         });
         
-        document.getElementById('resPrompts').innerHTML = htmlContent;
+        document.getElementById('resPrompts').innerHTML = promptHtml;
         resultArea.style.display = 'block';
 
     } catch (error) {
-        console.error("Error:", error);
-        alert("Gagal mengambil data. Pastikan koneksi internet aktif atau cek kuota API Key Anda.");
+        console.error(error);
+        alert("Gagal menghubungi Groq. Cek koneksi atau kuota API Key Anda.");
     } finally {
         loader.style.display = 'none';
     }
