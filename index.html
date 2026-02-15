@@ -2,99 +2,118 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>eyeGPT - Groq Fast Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eyeGPT - Secure Groq Edition</title>
     <style>
-        body { background: #050505; color: #f0f0f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
-        .console { max-width: 800px; margin: auto; border: 1px solid #f55036; padding: 25px; background: #0a0a0a; border-radius: 10px; box-shadow: 0 0 20px rgba(245, 80, 54, 0.2); }
-        h2 { color: #f55036; text-align: center; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
-        .input-group { margin-bottom: 20px; }
-        label { color: #888; font-size: 0.8em; display: block; margin-bottom: 5px; }
-        select, button { background: #111; color: #fff; border: 1px solid #333; padding: 12px; width: 100%; cursor: pointer; border-radius: 5px; outline: none; }
-        button { background: #f55036; color: #fff; border: none; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        button:hover { background: #ff6b57; box-shadow: 0 0 15px #f55036; }
-        .loading { display: none; color: #f55036; text-align: center; margin: 20px 0; font-weight: bold; }
-        .result { margin-top: 30px; display: none; border-top: 1px solid #333; padding-top: 20px; }
-        .fact-box { background: #1a1a1a; padding: 20px; border-left: 5px solid #f55036; margin-bottom: 20px; color: #e0e0e0; }
-        .scene { color: #88ff88; margin-top: 12px; background: #000; padding: 15px; border: 1px solid #222; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 0.9em; }
-        .scene-label { color: #f55036; font-weight: bold; display: block; margin-bottom: 5px; }
+        body { background: #050505; color: #f0f0f0; font-family: 'Segoe UI', sans-serif; padding: 20px; display: flex; justify-content: center; }
+        .console { width: 100%; max-width: 600px; border: 1px solid #f55036; padding: 25px; background: #0a0a0a; border-radius: 12px; box-shadow: 0 0 25px rgba(245, 80, 54, 0.1); }
+        h2 { color: #f55036; text-align: center; text-transform: uppercase; letter-spacing: 3px; font-size: 1.2em; border-bottom: 1px solid #222; padding-bottom: 15px; }
+        .input-group { margin-top: 20px; }
+        label { color: #666; font-size: 0.7em; text-transform: uppercase; letter-spacing: 1px; }
+        select, button { background: #111; color: #fff; border: 1px solid #333; padding: 14px; width: 100%; cursor: pointer; border-radius: 8px; margin-top: 8px; font-size: 1em; }
+        button { background: #f55036; border: none; font-weight: bold; transition: 0.4s; color: #fff; }
+        button:hover { background: #ff6b57; box-shadow: 0 0 20px #f55036; }
+        .loading { display: none; color: #f55036; text-align: center; margin: 20px 0; font-family: monospace; font-size: 0.9em; }
+        .result { margin-top: 30px; display: none; animation: slideUp 0.5s ease-out; }
+        .fact-box { background: #151515; padding: 20px; border-left: 4px solid #f55036; margin-bottom: 20px; border-radius: 4px; }
+        .scene { color: #a0a0a0; margin-top: 12px; background: #000; padding: 15px; border: 1px solid #222; border-radius: 6px; font-size: 0.9em; line-height: 1.5; }
+        .scene-label { color: #f55036; font-weight: bold; font-family: monospace; display: block; margin-bottom: 5px; }
+        .reset-btn { background: transparent; border: 1px solid #333; color: #444; font-size: 0.7em; width: auto; padding: 5px 10px; margin-top: 20px; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="console">
-    <h2>[ GROQ AI GENERATOR ]</h2>
+    <h2>[ ZOLDYCK AI v2.0 ]</h2>
     
     <div class="input-group">
-        <label>TARGET KATEGORI:</label>
+        <label>Pilih Jalur Pengetahuan:</label>
         <select id="subject">
-            <option value="hewan purba yang mengerikan">HEWAN</option>
-            <option value="fenomena alam bumi yang aneh">BUMI</option>
-            <option value="tumbuhan karnivora atau beracun">TUMBUHAN</option>
+            <option value="hewan purba yang aneh dan mengerikan">DATABASE: HEWAN</option>
+            <option value="fenomena alam bumi yang tidak masuk akal">DATABASE: BUMI</option>
+            <option value="tumbuhan karnivora atau beracun yang unik">DATABASE: TUMBUHAN</option>
         </select>
     </div>
 
-    <button onclick="generateWithGroq()">EKSEKUSI (GROQ SPEED)</button>
+    <button onclick="generateWithGroq()">EKSEKUSI PENCARIAN AI</button>
 
-    <div id="loader" class="loading">SINKRONISASI Llama-3 VIA GROQ...</div>
+    <div id="loader" class="loading">SINKRONISASI LLAMA-3... MENGAMBIL DATA...</div>
 
     <div id="resultArea" class="result">
         <div class="fact-box">
-            <strong style="color: #f55036;">[ TAHUKAH KAMU? ]</strong>
             <p id="resFact"></p>
         </div>
         <div id="resPrompts"></div>
+        <button class="reset-btn" onclick="resetKey()">Ganti API Key</button>
     </div>
 </div>
 
 <script>
-async function generateWithGroq() {
-    // API KEY GROQ MILIK ANDA
-    const API_KEY = "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";
-    const subject = document.getElementById('subject').value;
-    const loader = document.getElementById('loader');
-    const resultArea = document.getElementById('resultArea');
+    const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 
-    loader.style.display = 'block';
-    resultArea.style.display = 'none';
+    async function generateWithGroq() {
+        // Ambil Key dari Storage
+        let apiKey = localStorage.getItem('ZOLDYCK_GROQ_KEY');
 
-    const systemPrompt = `Berikan 1 fakta unik tentang ${subject}. Jelaskan dengan gaya 'Tahukah kamu...'. Setelah itu buatkan 3 prompt video sinematik detail (Klip 1, 2, 3) untuk Grok AI. Jawab HANYA dalam format JSON: {"fakta": "...", "prompts": ["...", "...", "..."]}`;
+        // Jika belum ada, minta user input
+        if (!apiKey || apiKey === "null") {
+            apiKey = prompt("SISTEM: Masukkan Groq API Key Anda untuk melanjutkan:");
+            if (!apiKey) return;
+            localStorage.setItem('ZOLDYCK_GROQ_KEY', apiKey);
+        }
 
-    try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`
-            },
-            body: JSON.stringify({
-                model: "llama3-8b-8192", // Menggunakan model Llama 3 tercepat
-                messages: [
-                    { role: "user", content: systemPrompt }
-                ],
-                response_format: { type: "json_object" }
-            })
-        });
+        const subject = document.getElementById('subject').value;
+        const loader = document.getElementById('loader');
+        const resultArea = document.getElementById('resultArea');
 
-        const data = await response.json();
-        const content = JSON.parse(data.choices[0].message.content);
+        loader.style.display = 'block';
+        resultArea.style.display = 'none';
 
-        document.getElementById('resFact').innerText = content.fakta;
-        
-        let promptHtml = "<strong style='color:#888'>[ VIDEO PROMPTS ]</strong>";
-        content.prompts.forEach((p, i) => {
-            promptHtml += `<div class="scene"><span class="scene-label">KLIP ${i+1}</span>${p}</div>`;
-        });
-        
-        document.getElementById('resPrompts').innerHTML = promptHtml;
-        resultArea.style.display = 'block';
+        const systemPrompt = `Berikan 1 fakta unik tentang ${subject}. Jelaskan dengan gaya 'Tahukah kamu...'. Buat 3 prompt video sinematik detail untuk Grok AI. Respon harus JSON murni: {"fakta": "...", "prompts": ["...", "...", "..."]}`;
 
-    } catch (error) {
-        console.error(error);
-        alert("Gagal menghubungi Groq. Cek koneksi atau kuota API Key Anda.");
-    } finally {
-        loader.style.display = 'none';
+        try {
+            const response = await fetch(GROQ_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: "llama3-8b-8192",
+                    messages: [{ role: "user", content: systemPrompt }],
+                    response_format: { type: "json_object" }
+                })
+            });
+
+            if (!response.ok) throw new Error("API Key Tidak Valid atau Kuota Habis.");
+
+            const data = await response.json();
+            const content = JSON.parse(data.choices[0].message.content);
+
+            document.getElementById('resFact').innerText = content.fakta;
+            
+            let promptHtml = "";
+            content.prompts.forEach((p, i) => {
+                promptHtml += `<div class="scene"><span class="scene-label">SCENE ${i+1}</span>${p}</div>`;
+            });
+            
+            document.getElementById('resPrompts').innerHTML = promptHtml;
+            resultArea.style.display = 'block';
+
+        } catch (error) {
+            alert("ERROR: " + error.message);
+            localStorage.removeItem('ZOLDYCK_GROQ_KEY'); // Hapus key yang salah
+        } finally {
+            loader.style.display = 'none';
+        }
     }
-}
+
+    function resetKey() {
+        localStorage.removeItem('ZOLDYCK_GROQ_KEY');
+        alert("API Key telah dihapus. Silakan tekan tombol Eksekusi lagi untuk memasukkan Key baru.");
+        location.reload();
+    }
 </script>
 
 </body>
