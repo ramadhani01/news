@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>eyeGPT - Live AI Fact Generator</title>
+    <style>
+        body { background: #050505; color: #00ffaa; font-family: 'Courier New', monospace; padding: 20px; }
+        .console { max-width: 800px; margin: auto; border: 1px solid #00ffaa; padding: 20px; background: #000; box-shadow: 0 0 20px #00ffaa33; }
+        h2 { text-align: center; border-bottom: 2px solid #00ffaa; padding-bottom: 10px; letter-spacing: 2px; }
+        .input-group { margin-bottom: 20px; }
+        select, button { background: #000; color: #00ffaa; border: 1px solid #00ffaa; padding: 12px; width: 100%; cursor: pointer; font-family: 'Courier New'; }
+        button { font-weight: bold; margin-top: 10px; transition: 0.3s; }
+        button:hover { background: #00ffaa; color: #000; box-shadow: 0 0 15px #00ffaa; }
+        .loading { display: none; color: #fff; text-align: center; margin: 20px 0; animation: blink 1s infinite; }
+        .result { margin-top: 30px; display: none; animation: fadeIn 0.5s; }
+        .fact-box { background: #111; padding: 20px; border-left: 5px solid #00ffaa; margin-bottom: 20px; color: #fff; line-height: 1.6; }
+        .scene { color: #88ff88; margin-top: 10px; background: #0a0a0a; padding: 15px; border: 1px solid #333; font-size: 0.9em; }
+        .label-red { color: #ff3e3e; font-weight: bold; }
+        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="console">
+    <h2>[ ZOLDYCK AI INTERFACE ]</h2>
+    
+    <div class="input-group">
+        <label>PILIH KATEGORI TARGET:</label>
+        <select id="subject">
+            <option value="hewan langka, predator, atau serangga unik">HEWAN</option>
+            <option value="anomali geologi bumi, tempat misterius, atau inti bumi">BUMI</option>
+            <option value="tumbuhan karnivora, beracun, atau purba">TUMBUHAN</option>
+        </select>
+    </div>
+
+    <button onclick="generateWithAI()">EKSEKUSI PENCARIAN AI</button>
+
+    <div id="loader" class="loading">SINKRONISASI DATA KE SERVER GEMINI...</div>
+
+    <div id="resultArea" class="result">
+        <div class="fact-box">
+            <strong style="color: #00ffaa;">[ DATA FAKTA ]</strong>
+            <p id="resFact"></p>
+        </div>
+        <div id="resPrompts"></div>
+    </div>
+</div>
+
+<script>
+async function generateWithAI() {
+    // API Key Anda sudah tertanam di sini
+    const API_KEY = "AIzaSyAZFsDHTB9TKi8X_ze3jpGeeXFsyOPugnM";
+    const subject = document.getElementById('subject').value;
+    const loader = document.getElementById('loader');
+    const resultArea = document.getElementById('resultArea');
+
+    loader.style.display = 'block';
+    resultArea.style.display = 'none';
+    
+    const prompt = `Berikan satu fakta unik yang sangat jarang diketahui tentang ${subject}. 
+    Berikan penjelasan dengan gaya "Tahukah kamu...". 
+    Kemudian buatkan 3 prompt video sinematik (klip 1, klip 2, klip 3) yang sangat detail untuk Grok/X AI guna menggambarkan fakta tersebut.
+    Balas HANYA dengan format JSON seperti ini: 
+    {
+      "fakta": "Isi fakta di sini",
+      "prompts": ["prompt klip 1", "prompt klip 2", "prompt klip 3"]
+    }`;
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+            })
+        });
+
+        const data = await response.json();
+        const rawResponse = data.candidates[0].content.parts[0].text;
+        const cleanJson = JSON.parse(rawResponse.replace(/```json|```/g, ''));
+
+        document.getElementById('resFact').innerText = cleanJson.fakta;
+        
+        let htmlContent = "<strong style='color:#ff3e3e'>[ PROMPT GENERATOR ]</strong>";
+        cleanJson.prompts.forEach((p, i) => {
+            htmlContent += `<div class="scene"><span class="label-red">KLIP ${i+1}:</span><br>${p}</div>`;
+        });
+        
+        document.getElementById('resPrompts').innerHTML = htmlContent;
+        resultArea.style.display = 'block';
+
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Gagal mengambil data. Pastikan koneksi internet aktif atau cek kuota API Key Anda.");
+    } finally {
+        loader.style.display = 'none';
+    }
+}
+</script>
+
+</body>
+</html>
